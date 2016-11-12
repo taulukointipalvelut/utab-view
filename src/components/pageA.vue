@@ -1,17 +1,13 @@
-<style>
-  
-</style>
-
 <template>
-  <h1>Page A</h1>
+  <p>{{message}}</p>
 </template>
 
 <script>
-  module.exports = {
-    data: function () {
-      return {
-        
-      }
+export default {
+  data() {
+    return {
+      message: "Page A"
     }
   }
+}
 </script>

@@ -1,20 +1,28 @@
-var Vue = require('vue');
+var Vue       = require('vue/dist/vue');  // vue incl. template 
 var VueRouter = require('vue-router');
+
 Vue.use(VueRouter);
 
-var PageA = Vue.extend(require('./components/pageA.vue'));
-var PageB = Vue.extend(require('./components/pageB.vue'));
+const PageA = require('./components/pageA.vue');
+const PageB = require('./components/pageB.vue')
 
-var App = Vue.extend({});
-var router = VueRouter();
-
-router.map({
-    '/pageA': {
-        component: PageA
-    },
-    '/pageB': {
-        component: PageB
+const routes = [
+  {
+    path: '/pageA',
+    components: {
+      main: PageA
     }
-});
+  },
+  {
+    path: '/pageB',
+    components: {
+      main: PageB
+    }
+  }
+]
 
-router.start(App, '#app');
+const router = new VueRouter({routes});
+
+const app = new Vue({
+  router
+}).$mount('#app')
