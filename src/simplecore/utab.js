@@ -1,0 +1,335 @@
+// Todos: multiple institutions, filter order
+
+// simple utab in javascript
+// look at the example() at the end of this sourcecode
+// the number of teams should be even
+// expected round num is 1 ~ 4
+
+var Team = function (team_id, institution_id) {
+    this.team_id = team_id
+    this.institution_id = institution_id
+    this.past_sides = []
+    this.wins = []
+    this.scores = []
+    this.margins = []
+    this.past_opponent_ids = []
+}
+
+Team.prototype.set_result = function (side, win, score, margin, opponent_id) {
+    this.past_sides.push(side)
+    this.wins.push(win)
+    this.scores.push(score)
+    this.margins.push(margin)
+    this.past_opponent_ids.push(opponent_id)
+}
+
+Team.prototype.one_sided = function () {
+    var ind = this.past_sides.filter(side => side === "gov").length - this.past_sides.filter(side => side === "opp").length) >= 1
+    if (ind > 0) {
+        return 1
+    } else if (ind < 0) {
+        return -1
+    } else {
+        return 0
+    }
+}
+
+function basic_functions() {
+    Array.prototype.sum = function () { return this.reduce((a, b) => a + b)}
+    Array.prototype.adjusted_average = function () {
+        var sum = this.sum()
+        if (this.length == 0) {
+            return 0
+        } else {
+            return sum/this.length
+        }
+    }
+}
+
+function get_team_by_id(teams, team_id) {
+    for (team of list) {
+        if (team.team_id === team_id) return team
+    };
+    throw new Error("could no find team_id:" + team_id)
+}
+
+function compare_by_x(a, b, f, tf=true) {
+    var point_a = f(a)
+    var point_b = f(b)
+    if (point_a > point_b) {
+        return tf ? 1 : -1
+    } else if (point_a < point_b) {
+        return tf ? -1 : 1
+    } else {
+        return 0
+    }
+}
+
+function compare_by_score(a, b) {
+    var v_compare_by_win = compare_by_x(a, b, x => x.wins.sum())
+    if (v_compare_by_win === 0) {
+        var v_compare_by_score = compare_by_x(a, b, x => x.scores.adjusted_average())
+        if (v_compare_by_score === 0) {
+            var v_compare_by_margin = compare_by_x(a, b, x => x.margins.adjusted_average())
+            return v_compare_by_margin >= 0 ? 1 : -1
+        } else {
+            return v_compare_by_score
+        }
+    } else {
+        return compare_by_win
+    }
+};
+
+function sort_teams(teams) {
+    return teams.sort(compare_by_score)
+}
+
+function process_result(teams, results) {
+    for (result of results) {
+        var team1 = get_team_by_id(teams, result.team1.team_id)
+        var team2 = get_team_by_id(teams, result.team2.team_id)
+        team1.set_result(result.team1.side, result.team1.win, result.team1.score, result.team1.margin, result.team2.team_id)
+        team2.set_result(result.team2.side, result.team2.win, result.team2.score, result.team2.margin, result.team1.team_id)
+    }
+}
+
+function prefer_by_side(team, other) {
+    var fit = (other.one_sided() * team.one_sided() === -1)
+
+    if (a_fit & !b_fit) {
+        return 1
+    } else if (b_fit & !a_fit) {
+        return -1
+    } else {
+        return 0
+    }
+}
+
+function filter_by_strength(team, a, b) {
+    var a_win_diff = Math.abs(team.wins.sum() - a.wins.sum())
+    var b_win_diff = Math.abs(team.wins.sum() - b.wins.sum())
+    if (a_win_diff > b_win_diff) {
+        return -1
+    } else if (a_win_diff < b_win_diff) {
+        return 1
+    } else {
+        var a_score_diff = Math.abs(team.scores.adjusted_average() - a.scores.adjusted_average)
+        var b_score_diff = Math.abs(team.scores.adjusted_average() - b.scores.adjusted_average)
+        if (a_score_diff > b_score_diff) {
+            return -1
+        } else if (a_score_diff < b_score_diff) {
+            return 1
+        } else {
+            /*
+            var a_margin_diff = Math.abs(team.margins.adjusted_average() - a.margins.adjusted_average)
+            var b_margin_diff = Math.abs(team.margins.adjusted_average() - b.margins.adjusted_average)
+            if (a_margin_diff > b_margin_diff) {
+                return -1
+            } else if (a_margin_diff < b_margin_diff) {
+                return 1
+            } else {
+                return 0
+            } */
+            return 0
+        }
+    }
+}
+
+function filter_by_institution(team, a, b) {
+    var a_fit = a.institution_id != team.institution_id
+    var b_fit = b.institution_id != team.institution_id
+    if (a_fit & !b_fit) {
+        return 1
+    } else if (b_fit & !a_fit) {
+        return -1
+    } else {
+        return 0
+    }
+}
+
+function filter_by_past_opponent(team, a, b) {
+    a_past = team.past_opponent.filter(opp_id => opp_id === a.team_id).length
+    b_past = team.past_opponent.filter(opp_id => opp_id === b.team_id).length
+    if (a_past > b_past) {
+        return -1
+    } else if (a_past < b_past) {
+        return 1
+    } else {
+        return 0
+    }
+}
+
+function filter(teams) {
+    /* priority
+    1. side
+    2. strength
+    3. institution
+    4. past_opponent
+    */
+    var ranks = {}
+    function sort_teams(team) {}
+        function _(a, b) {
+            functions = [filter_by_side, filter_by_strength, filter_by_institution, filter_by_past_opponent]
+            if (c1 === 0)
+        }
+
+        return _
+    }
+    for (team of teams) {
+        var preferable = []
+        var unpreferable = []
+        var neutral = []
+        others = teams.filter(other => team.team_id != other.team_id)
+        for (other of others) {
+
+        }
+    }
+    return ranks
+}
+
+function match(teams, ranks) { // modified gale shapley algorithm
+    var matching = {}
+    var rank_pointers = {}
+    for (team of teams) {
+        matching[team.team_id] = null
+        rank_pointers[team.team_id] = 0
+    }
+    var remaining = [].concat(teams.map(team => team.team_id))
+    while (remaining.length > 1) {
+        ap_id = remaining[0]
+        for (op_id of ranks[ap_id]) {
+            if (matching[op_id] === null | ranks[op_id].indexOf(matching[op_id]) > ranks[op_id].indexOf(ap_id)) {
+                if (matching[op_id] !== null) {
+                    rank_pointers[matching[op_id]] += 1
+                    matching[matching[op_id]] = null
+                }
+                matching[ap_id] = op_id
+                matching[op_id] = ap_id
+                break
+            } else {
+                rank_pointers[ap_id] += 1
+            }
+        }
+        remaining = teams.filter(x => matching[x] === null).map(x => x.team_id)
+    }
+    return matching
+}
+
+function get_matchup(teams) {
+    sorted_teams = sort_teams(teams)
+    var matchup = []
+    var remaining = sorted_teams.map(x => x.team_id)
+    var threshold = Math.max(Math.floor(teams.length/6), 2)
+
+    var ranks = filter(teams)
+    matching = match(ranks, teams)
+    /*
+    for (var i = 0; i < sorted_teams.length; i++) {
+        if (!sorted_teams[i].matched) {
+            for (var j = i + 1; j < sorted_teams.length; j++) {
+                var match = [null, null]
+                var team1 = sorted_teams[i]
+                var team2 = sorted_teams[j]
+                if () {
+
+                } else if (j - i >= 5 | j + 1 === sorted_teams.length) {
+                    matchup.push({team1: team1, team2: team2})
+                    break
+                }
+            }
+        }
+    }*/
+
+}
+
+function check_teams(teams) {
+    if (teams.length % 2 === 1) {
+        throw new Error("the number of teams should be odd")
+    }
+
+    console.log(teams.length)
+    for (var i = 0; i < teams.length; i++) {
+        for (var j = i + 1; j < teams.length; j++) {
+            if (teams[i].team_id === teams[j].team_id) {
+                throw new Error("same team exists")
+            }
+        }
+    }
+}
+//check_teams([{team_id: 1}, {team_id: 2}, {team_id: 3}])
+//check_teams([{team_id: 1}, {team_id: 1}])
+
+function example() {
+    var teams = []
+    for (var i = 0; i < 8; i++) {
+        teams.push(new Team(i, Math.floor(Math.random()*4)))
+    }
+
+    for (var r = 0; r < 4; r++) {
+
+        var matchup = get_matchup(teams)
+        console.log(matchup)
+
+        var results = [
+            {
+                team1: {
+                    team_id: 0,
+                    win: true,
+                    score: 23,
+                    side: "gov"
+                },
+                team2: {
+                    team_id: 1,
+                    win: false,
+                    score: 22,
+                    side: "opp"
+                }
+            },
+            {
+                team1: {
+                    team_id: 2,
+                    win: true,
+                    score: 23,
+                    side: "gov"
+                },
+                team2: {
+                    team_id: 3,
+                    win: false,
+                    score: 22,
+                    side: "opp"
+                }
+            },
+            {
+                team1: {
+                    team_id: 4,
+                    win: true,
+                    score: 23,
+                    side: "gov"
+                },
+                team2: {
+                    team_id: 5,
+                    win: false,
+                    score: 22,
+                    side: "opp"
+                }
+            },
+            {
+                team1: {
+                    team_id: 6,
+                    win: true,
+                    score: 23,
+                    side: "gov"
+                },
+                team2: {
+                    team_id: 7,
+                    win: false,
+                    score: 22,
+                    side: "opp"
+                }
+            },
+        ]
+
+        process_result(teams, results)
+    }
+
+}
