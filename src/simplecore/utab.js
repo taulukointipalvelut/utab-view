@@ -1,9 +1,8 @@
-// filter order
+// Simple/Faster version of utab in javascript with new matching algorithm
+// Designed to help utab-view
+// The usage is at the bottom of this sourcecode
 
-// simple utab in javascript
-// look at the example() at the end of this sourcecode
-// the number of teams should be even
-// expected round num is 1 ~ 4
+// Expected round num is 1 ~ 6
 
 var Team = function (team_id, institution_ids) {
     this.team_id = team_id
@@ -57,9 +56,9 @@ function compare_by_x(a, b, f, tf=true) {
     var point_a = f(a)
     var point_b = f(b)
     if (point_a > point_b) {
-        return tf ? 1 : -1
-    } else if (point_a < point_b) {
         return tf ? -1 : 1
+    } else if (point_a < point_b) {
+        return tf ? 1 : -1
     } else {
         return 0
     }
@@ -71,7 +70,7 @@ function compare_by_score(a, b) {
         var v_compare_by_score = compare_by_x(a, b, x => x.scores.adjusted_average())
         if (v_compare_by_score === 0) {
             var v_compare_by_margin = compare_by_x(a, b, x => x.margins.adjusted_average())
-            return v_compare_by_margin >= 0 ? 1 : -1
+            return v_compare_by_margin >= 0 ? -1 : 1
         } else {
             return v_compare_by_score
         }
@@ -88,8 +87,9 @@ function process_result(teams, results) {
     for (result of results) {
         var team1 = get_team_by_id(teams, result.team1.team_id)
         var team2 = get_team_by_id(teams, result.team2.team_id)
-        team1.set_result(result.team1.side, result.team1.win, result.team1.score, result.team1.margin, result.team2.team_id)
-        team2.set_result(result.team2.side, result.team2.win, result.team2.score, result.team2.margin, result.team1.team_id)
+        var margin = result.team1.score - result.team2.score
+        team1.set_result(result.team1.side, result.team1.win, result.team1.score, margin, result.team2.team_id)
+        team2.set_result(result.team2.side, result.team2.win, result.team2.score, -margin, result.team1.team_id)
     }
 }
 
@@ -98,9 +98,9 @@ function filter_by_side(team, a, b) {
     var b_fit = (b.one_sided() * team.one_sided() < 0)
 
     if (a_fit & !b_fit) {
-        return 1
-    } else if (b_fit & !a_fit) {
         return -1
+    } else if (b_fit & !a_fit) {
+        return 1
     } else {
         return 0
     }
@@ -110,16 +110,16 @@ function filter_by_strength(team, a, b) {
     var a_win_diff = Math.abs(team.wins.sum() - a.wins.sum())
     var b_win_diff = Math.abs(team.wins.sum() - b.wins.sum())
     if (a_win_diff > b_win_diff) {
-        return -1
-    } else if (a_win_diff < b_win_diff) {
         return 1
+    } else if (a_win_diff < b_win_diff) {
+        return -1
     } else {
         var a_score_diff = Math.abs(team.scores.adjusted_average() - a.scores.adjusted_average)
         var b_score_diff = Math.abs(team.scores.adjusted_average() - b.scores.adjusted_average)
         if (a_score_diff > b_score_diff) {
-            return -1
-        } else if (a_score_diff < b_score_diff) {
             return 1
+        } else if (a_score_diff < b_score_diff) {
+            return -1
         } else {
             return 0
         }
@@ -130,9 +130,9 @@ function filter_by_institution(team, a, b) {
     var a_insti = team.institution_ids.filter(i => i === a.team_id).length
     var b_insti = team.institution_ids.filter(i => i === b.team_id).length
     if (a_insti < b_insti) {
-        return 1
-    } else if (a_insti > b_insti) {
         return -1
+    } else if (a_insti > b_insti) {
+        return 1
     } else {
         return 0
     }
@@ -142,15 +142,15 @@ function filter_by_past_opponent(team, a, b) {
     a_past = team.past_opponent_ids.filter(opp_id => opp_id === a.team_id).length
     b_past = team.past_opponent_ids.filter(opp_id => opp_id === b.team_id).length
     if (a_past > b_past) {
-        return -1
-    } else if (a_past < b_past) {
         return 1
+    } else if (a_past < b_past) {
+        return -1
     } else {
         return 0
     }
 }
 
-function get_ranks(teams, functions=[filter_by_side, filter_by_strength, filter_by_institution, filter_by_past_opponent]) {
+function get_ranks(teams, filter_functions) {
     /* priority
     1. side
     2. strength
@@ -160,13 +160,13 @@ function get_ranks(teams, functions=[filter_by_side, filter_by_strength, filter_
     var ranks = {}
     function sort_teams(team) {
         function _(a, b) {
-            for (func of functions) {
+            for (func of filter_functions) {
                 var c = func(team, a, b)
                 if (c !== 0) {
                     return c
                 }
             }
-            return a.team_id > b.team_id ? 1 : -1
+            return a.team_id > b.team_id ? -1 : 1
         }
         return _
     }
@@ -207,11 +207,10 @@ function match(teams, ranks) { // modified gale shapley algorithm
     return matching
 }
 
-function get_matchup(teams) {
+function get_matchup(teams, filter_functions = [filter_by_strength, filter_by_side, filter_by_institution, filter_by_past_opponent]) {
     sorted_teams = sort_teams(teams)
-    var ranks = get_ranks(teams)
+    var ranks = get_ranks(teams, filter_functions)
     matching = match(teams, ranks)
-
     var matchup = []
     var remaining = [].concat(sorted_teams)
     for (key in matching) {
@@ -264,81 +263,57 @@ function check_teams(teams) {
 }
 //check_teams([{team_id: 1}, {team_id: 2}, {team_id: 3}])
 //check_teams([{team_id: 1}, {team_id: 1}])
+
 basic_functions()
 
-function example() {
+
+/*
+
+Example
+
+*/
+
+function generate_results(matchup) {
+    var results = []
+
+    for (pair of matchup) {
+        team1_score = Math.floor(210 + Math.floor(Math.random()*24))
+        team2_score = Math.floor(210 + Math.floor(Math.random()*24))
+        team1_win = team1_score > team2_score ? 1 : 0
+        results.push({
+            team1: {
+                team_id: pair.team1,
+                win: team1_win,
+                score: team1_score,
+                side: "gov"
+            },
+            team2: {
+                team_id: pair.team2,
+                win: 1 - team1_win,
+                score: team2_score,
+                side: "opp"
+            }
+        })
+    }
+    return results
+}
+
+function example(n, rounds=4) {
     var teams = []
-    for (var i = 0; i < 8; i++) {
-        teams.push(new Team(i, [Math.floor(Math.random()*4)]))
+    for (var i = 0; i < n; i++) {
+        teams.push(new Team(i, [i%4]))
     }
 
-    for (var r = 0; r < 4; r++) {
-
-        var matchup = get_matchup(teams)
+    for (var r = 0; r < rounds; r++) {
+        var matchup = get_matchup(teams, [filter_by_strength, filter_by_side, filter_by_institution, filter_by_past_opponent])
         console.log(matchup)
 
-        var results = [
-            {
-                team1: {
-                    team_id: 0,
-                    win: true,
-                    score: 23,
-                    side: "gov"
-                },
-                team2: {
-                    team_id: 1,
-                    win: false,
-                    score: 22,
-                    side: "opp"
-                }
-            },
-            {
-                team1: {
-                    team_id: 2,
-                    win: true,
-                    score: 23,
-                    side: "gov"
-                },
-                team2: {
-                    team_id: 3,
-                    win: false,
-                    score: 22,
-                    side: "opp"
-                }
-            },
-            {
-                team1: {
-                    team_id: 4,
-                    win: true,
-                    score: 23,
-                    side: "gov"
-                },
-                team2: {
-                    team_id: 5,
-                    win: false,
-                    score: 22,
-                    side: "opp"
-                }
-            },
-            {
-                team1: {
-                    team_id: 6,
-                    win: true,
-                    score: 23,
-                    side: "gov"
-                },
-                team2: {
-                    team_id: 7,
-                    win: false,
-                    score: 22,
-                    side: "opp"
-                }
-            },
-        ]
+        var results = generate_results(matchup)
 
         process_result(teams, results)
+        console.log(teams)
     }
 
 }
 
-example()
+example(50)
