@@ -5,12 +5,12 @@ var source     = require('vinyl-source-stream')
 
 gulp.task('build', function() {
   browserify({
-    'entries': ['./src/main.js']
+    'entries': ['./src/app.js']
   })
   .transform(vueify)
   .bundle()
   .pipe(source('bundle.js'))
-  .pipe(gulp.dest('./'))
+  .pipe(gulp.dest('./build/js/'))
 })
 
 gulp.task('default', ['build'])
