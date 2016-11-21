@@ -1,3 +1,4 @@
-node-modules/*
+/node-modules/
+/build/
 
 npm-debug.log

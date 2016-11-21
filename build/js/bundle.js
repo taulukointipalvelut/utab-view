@@ -15633,19 +15633,64 @@ return Vue$2;
 })));
 
 },{}],6:[function(require,module,exports){
-const Vue       = require('vue/dist/vue');  // vue incl. template 
-const VueRouter = require('vue-router');
-const routes    = require('./routes');
+var inserted = exports.cache = {}
+
+function noop () {}
+
+exports.insert = function (css) {
+  if (inserted[css]) return noop
+  inserted[css] = true
+
+  var elem = document.createElement('style')
+  elem.setAttribute('type', 'text/css')
+
+  if ('textContent' in elem) {
+    elem.textContent = css
+  } else {
+    elem.styleSheet.cssText = css
+  }
+
+  document.getElementsByTagName('head')[0].appendChild(elem)
+  return function () {
+    document.getElementsByTagName('head')[0].removeChild(elem)
+    inserted[css] = false
+  }
+}
+
+},{}],7:[function(require,module,exports){
+const Vue        = require('vue/dist/vue');  // vue incl. template 
+const VueRouter  = require('vue-router');
+const routes     = require('./routes');
+const components = require('./global_components');
 
 Vue.use(VueRouter);
 
+components.forEach(function(c){
+  Vue.component(c.name, c.component);
+});
+
 const router = new VueRouter({routes});
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (false) {
+      next({
+        path: '/login',
+        query: { redirect: to.fullPath }
+      })
+    } else {
+      next()
+    }
+  } else {
+    next()
+  }
+})
 
 const app = new Vue({
   router
 }).$mount('#app');
 
-},{"./routes":15,"vue-router":3,"vue/dist/vue":5}],7:[function(require,module,exports){
+},{"./global_components":12,"./routes":13,"vue-router":3,"vue/dist/vue":5}],8:[function(require,module,exports){
 ;(function(){
 'use strict';
 
@@ -15653,102 +15698,14 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = {
-  name: 'auth'
+  name: 'err404'
 };
 })()
 if (module.exports.__esModule) module.exports = module.exports.default
 var __vue__options__ = (typeof module.exports === "function"? module.exports.options: module.exports)
 if (__vue__options__.functional) {console.error("[vueify] functional components are not supported and should be defined in plain js files using render functions.")}
-__vue__options__.render = function(){with(this){return _h('div',{attrs:{"id":"auth"}},[_h('div',{staticClass:"pure-menu pure-menu-horizontal pure-menu-scrollable",attrs:{"id":"menu"}},[_h('ul',{staticClass:"pure-menu-list"},[_h('li',{staticClass:"pure-menu-item"},[_h('router-link',{staticClass:"pure-menu-link",attrs:{"to":"/auth/home"}},["Home"])]),_h('li',{staticClass:"pure-menu-item"},[_h('router-link',{staticClass:"pure-menu-link",attrs:{"to":"/auth/logout"}},["Logout"])])])]),_h('router-view')])}}
-__vue__options__.staticRenderFns = []
-if (module.hot) {(function () {  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), true)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-1", __vue__options__)
-  } else {
-    hotAPI.reload("data-v-1", __vue__options__)
-  }
-})()}
-},{"vue":4,"vue-hot-reload-api":2}],8:[function(require,module,exports){
-;(function(){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = {
-  name: 'auth-home'
-};
-})()
-if (module.exports.__esModule) module.exports = module.exports.default
-var __vue__options__ = (typeof module.exports === "function"? module.exports.options: module.exports)
-if (__vue__options__.functional) {console.error("[vueify] functional components are not supported and should be defined in plain js files using render functions.")}
-__vue__options__.render = function(){with(this){return _m(0)}}
-__vue__options__.staticRenderFns = [function(){with(this){return _h('div',{attrs:{"id":"auth-home"}},[_h('p',["authed"])])}}]
-if (module.hot) {(function () {  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), true)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-5", __vue__options__)
-  } else {
-    hotAPI.reload("data-v-5", __vue__options__)
-  }
-})()}
-},{"vue":4,"vue-hot-reload-api":2}],9:[function(require,module,exports){
-;(function(){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = {
-  name: 'login',
-  methods: {
-    login: function login() {
-      this.$router.push('/auth/home');
-    }
-  }
-};
-})()
-if (module.exports.__esModule) module.exports = module.exports.default
-var __vue__options__ = (typeof module.exports === "function"? module.exports.options: module.exports)
-if (__vue__options__.functional) {console.error("[vueify] functional components are not supported and should be defined in plain js files using render functions.")}
-__vue__options__.render = function(){with(this){return _h('div',{attrs:{"id":"login"}},[_h('button',{staticClass:"pure-button",on:{"click":login}},["Log-in"])])}}
-__vue__options__.staticRenderFns = []
-if (module.hot) {(function () {  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), true)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-4", __vue__options__)
-  } else {
-    hotAPI.reload("data-v-4", __vue__options__)
-  }
-})()}
-},{"vue":4,"vue-hot-reload-api":2}],10:[function(require,module,exports){
-;(function(){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = {
-  name: 'logout',
-  beforeRouteEnter: function beforeRouteEnter(to, from, next) {
-    next(function (vm) {
-      vm.$router.replace('/');
-    });
-  }
-};
-})()
-if (module.exports.__esModule) module.exports = module.exports.default
-var __vue__options__ = (typeof module.exports === "function"? module.exports.options: module.exports)
-if (__vue__options__.functional) {console.error("[vueify] functional components are not supported and should be defined in plain js files using render functions.")}
-__vue__options__.render = function(){with(this){return _m(0)}}
-__vue__options__.staticRenderFns = [function(){with(this){return _h('div',{attrs:{"id":"logout"}})}}]
+__vue__options__.render = function(){with(this){return _h('div',{attrs:{"id":"err404"}},[_m(0),_h('p',["Requested URL \""+_s($route.path)+"\" is not found.",_m(1),"Go back to ",_h('router-link',{attrs:{"to":"/home"}},["Home"])])])}}
+__vue__options__.staticRenderFns = [function(){with(this){return _h('h1',["404 Error: Page Not Found"])}},function(){with(this){return _h('br')}}]
 if (module.hot) {(function () {  var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
@@ -15759,7 +15716,7 @@ if (module.hot) {(function () {  var hotAPI = require("vue-hot-reload-api")
     hotAPI.reload("data-v-2", __vue__options__)
   }
 })()}
-},{"vue":4,"vue-hot-reload-api":2}],11:[function(require,module,exports){
+},{"vue":4,"vue-hot-reload-api":2}],9:[function(require,module,exports){
 ;(function(){
 'use strict';
 
@@ -15767,25 +15724,108 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = {
-  name: 'nauth'
+  name: 't'
 };
 })()
 if (module.exports.__esModule) module.exports = module.exports.default
 var __vue__options__ = (typeof module.exports === "function"? module.exports.options: module.exports)
 if (__vue__options__.functional) {console.error("[vueify] functional components are not supported and should be defined in plain js files using render functions.")}
-__vue__options__.render = function(){with(this){return _h('div',{attrs:{"id":"nauth"}},[_h('div',{staticClass:"pure-menu pure-menu-horizontal pure-menu-scrollable",attrs:{"id":"menu"}},[_h('ul',{staticClass:"pure-menu-list"},[_h('li',{staticClass:"pure-menu-item"},[_h('router-link',{staticClass:"pure-menu-link",attrs:{"to":"/nauth/home"}},["Home"])]),_h('li',{staticClass:"pure-menu-item"},[_h('router-link',{staticClass:"pure-menu-link",attrs:{"to":"/nauth/pageA"}},["Page A"])]),_h('li',{staticClass:"pure-menu-item"},[_h('router-link',{staticClass:"pure-menu-link",attrs:{"to":"/nauth/pageB"}},["Page B"])]),_h('li',{staticClass:"pure-menu-item"},[_h('router-link',{staticClass:"pure-menu-link",attrs:{"to":"/nauth/login"}},["Login"])])])]),_h('router-view')])}}
-__vue__options__.staticRenderFns = []
+__vue__options__.render = function(){with(this){return _h('div',{attrs:{"id":"t"}},[_h('div',{staticClass:"pure-menu pure-menu-horizontal pure-menu-scrollable"},[_h('ul',{staticClass:"pure-menu-list"},[_h('router-link',{staticClass:"pure-menu-item",attrs:{"tag":"li","to":"/home"}},[_m(0)]),_h('router-link',{staticClass:"pure-menu-item",attrs:{"tag":"li","to":"/login"}},[_m(1)])])])])}}
+__vue__options__.staticRenderFns = [function(){with(this){return _h('a',{staticClass:"pure-menu-link"},["Home"])}},function(){with(this){return _h('a',{staticClass:"pure-menu-link"},["Login"])}}]
 if (module.hot) {(function () {  var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-1", __vue__options__)
+  } else {
+    hotAPI.reload("data-v-1", __vue__options__)
+  }
+})()}
+},{"vue":4,"vue-hot-reload-api":2}],10:[function(require,module,exports){
+var __vueify_style_dispose__ = require("vueify/lib/insert-css").insert("#t-home {\n  padding-left: 15px;\n  padding-right: 15px;\n}\ntable {\n  width: 100%;\n}\ntbody tr {\n  cursor: pointer;\n}\ntbody tr:hover {\n  background-color: #f5f5f5;\n}\nth,\ntd {\n  width: 15px;\n}\nth:nth-child(2),\ntd:nth-child(2) {\n  width: auto;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n}\nth a,\ntd a {\n  text-decoration: none;\n}\nth a,\nth i {\n  color: #000;\n}\nth a:hover,\nth i:hover {\n  color: #696969;\n}\ntd a,\ntd i {\n  color: #696969;\n}\ntd a:hover,\ntd i:hover {\n  color: #000;\n}\ntd a {\n  color: #696969;\n}\ntd a:first,\ntd a:nth-child(2) {\n  display: block;\n}\n.ctrl-btn {\n  cursor: pointer;\n  text-align: right;\n}")
+;(function(){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = {
+  name: 't-home',
+  data: function data() {
+    return {
+      loading: true,
+      error: null,
+      id_counter: 1,
+      tournaments: [{
+        id: 0,
+        name: 'Test Tournament',
+        url: '/admin/t/Test Tournament',
+        config_url: '/admin/t/Test Tournament/config'
+      }, {
+        id: 1,
+        name: 'Test Tournament 2',
+        url: '/admin/t/Test Tournament 2',
+        config_url: '/admin/t/Test Tournament 2/config'
+      }]
+    };
+  },
+  created: function created() {
+    this.refresh_data();
+    this.id_counter = this.tournaments.length;
+  },
+
+  watch: {
+    '$route': 'refresh_data'
+  },
+  methods: {
+    refresh_data: function refresh_data() {
+      var _this = this;
+
+      this.loading = true;
+      setTimeout(function () {
+        _this.loading = false;
+      }, 500);
+    },
+    add_data: function add_data(evt) {
+      var new_tournament_name = prompt('What\'s the name of new tournament?');
+      if (new_tournament_name) {
+        this.tournaments.push({
+          id: this.id_counter++,
+          name: new_tournament_name,
+          url: '/' + ['admin', 't', new_tournament_name].join('/'),
+          config_url: '/' + ['admin', 't', new_tournament_name, 'config'].join('/')
+        });
+      }
+    },
+    delete_data: function delete_data(tournament) {
+      if (confirm('Are you sure to DELETE ' + tournament.name + '?')) {
+        this.tournaments = this.tournaments.filter(function (el) {
+          return el.id !== tournament.id;
+        }, this);
+      }
+    }
+  }
+};
+})()
+if (module.exports.__esModule) module.exports = module.exports.default
+var __vue__options__ = (typeof module.exports === "function"? module.exports.options: module.exports)
+if (__vue__options__.functional) {console.error("[vueify] functional components are not supported and should be defined in plain js files using render functions.")}
+__vue__options__.render = function(){with(this){return _h('div',{attrs:{"id":"t-home"}},[_m(0),_h('table',{staticClass:"pure-table pure-table-horizontal"},[_h('thead',[_h('tr',[_m(1),_m(2),_h('th',{staticClass:"ctrl-btn",on:{"click":refresh_data}},[_m(3)]),_h('th',{staticClass:"ctrl-btn",on:{"click":add_data}},[_m(4)])])]),_h('tbody',[_h('tr',{directives:[{name:"show",rawName:"v-show",value:(loading),expression:"loading"}]},[_m(5),_m(6)]),_h('tr',{directives:[{name:"show",rawName:"v-show",value:(error),expression:"error"}]},[_m(7),_h('td',{attrs:{"colspan":"3"}},[_s(error)])]),_l((tournaments),function(datum){return (!(loading))?_h('tr',[_h('router-link',{attrs:{"tag":"td","to":datum.url}},[_h('a',[_s(datum.id)])]),_h('router-link',{attrs:{"tag":"td","to":datum.url}},[_h('a',[_s(datum.name)])]),_h('router-link',{staticClass:"ctrl-btn",attrs:{"tag":"td","to":datum.config_url}},[_m(8,true)]),_h('td',{staticClass:"ctrl-btn",on:{"click":function($event){delete_data(datum)}}},[_m(9,true)])]):_e()})])])])}}
+__vue__options__.staticRenderFns = [function(){with(this){return _h('h1',["Admin Home"])}},function(){with(this){return _h('th',["ID"])}},function(){with(this){return _h('th',["Tournament Name"])}},function(){with(this){return _h('a',[_h('i',{staticClass:"fa fa-refresh",attrs:{"aria-hidden":"true","title":"Refresh"}})])}},function(){with(this){return _h('a',[_h('i',{staticClass:"fa fa-plus",attrs:{"aria-hidden":"true","title":"Add New Tournament"}})])}},function(){with(this){return _h('td',[_h('i',{staticClass:"fa fa-spinner fa-spin"})])}},function(){with(this){return _h('td',{attrs:{"colspan":"3"}},["Loading, please wait..."])}},function(){with(this){return _h('td',[_h('i',{staticClass:"fa fa-exclamation-triangle"})])}},function(){with(this){return _h('a',[_h('i',{staticClass:"fa fa-pencil",attrs:{"aria-hidden":"true","title":"Edit"}})])}},function(){with(this){return _h('i',{staticClass:"fa fa-times",attrs:{"aria-hidden":"true","titile":"Delete"}})}}]
+if (module.hot) {(function () {  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  module.hot.dispose(__vueify_style_dispose__)
   if (!module.hot.data) {
     hotAPI.createRecord("data-v-3", __vue__options__)
   } else {
     hotAPI.reload("data-v-3", __vue__options__)
   }
 })()}
-},{"vue":4,"vue-hot-reload-api":2}],12:[function(require,module,exports){
+},{"vue":4,"vue-hot-reload-api":2,"vueify/lib/insert-css":6}],11:[function(require,module,exports){
+var __vueify_style_dispose__ = require("vueify/lib/insert-css").insert("#t-tournaments-config {\n  padding-left: 15px;\n  padding-right: 15px;\n}\ntable {\n  width: 100%;\n}\ntbody tr {\n  cursor: pointer;\n}\ntbody tr:hover {\n  background-color: #f5f5f5;\n}\nth,\ntd {\n  width: 15px;\n}\nth:nth-child(2),\ntd:nth-child(2) {\n  width: auto;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n}\nth a,\ntd a {\n  text-decoration: none;\n}\nth a,\nth i {\n  color: #000;\n}\nth a:hover,\nth i:hover {\n  color: #696969;\n}\ntd a,\ntd i {\n  color: #696969;\n}\ntd a:hover,\ntd i:hover {\n  color: #000;\n}\ntd a {\n  color: #696969;\n}\ntd a:first,\ntd a:nth-child(2) {\n  display: block;\n}\n.ctrl-btn {\n  cursor: pointer;\n  text-align: right;\n}")
 ;(function(){
 'use strict';
 
@@ -15793,131 +15833,175 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = {
-  name: 'nauth-home'
-};
-})()
-if (module.exports.__esModule) module.exports = module.exports.default
-var __vue__options__ = (typeof module.exports === "function"? module.exports.options: module.exports)
-if (__vue__options__.functional) {console.error("[vueify] functional components are not supported and should be defined in plain js files using render functions.")}
-__vue__options__.render = function(){with(this){return _m(0)}}
-__vue__options__.staticRenderFns = [function(){with(this){return _h('div',{attrs:{"id":"nauth-home"}})}}]
-if (module.hot) {(function () {  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), true)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-6", __vue__options__)
-  } else {
-    hotAPI.reload("data-v-6", __vue__options__)
-  }
-})()}
-},{"vue":4,"vue-hot-reload-api":2}],13:[function(require,module,exports){
-;(function(){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = {
-  name: 'nauth-pageA',
+  name: 't-tournaments-config',
   data: function data() {
     return {
-      message: "Page A"
+      loading: true,
+      error: null,
+      id_counter: 1,
+      field: {
+        tournament_name: '',
+        tournament_style: ''
+      },
+      rounds: [{
+        id: 0,
+        name: 'Round 1'
+      }, {
+        id: 1,
+        name: 'Round 2'
+      }],
+      styles: [{
+        id: 'PDA',
+        name: 'PDA'
+      }, {
+        id: 'Asian',
+        name: 'Asian'
+      }, {
+        id: 'BP',
+        name: 'BP (British Parliamentary)'
+      }, {
+        id: 'NA',
+        name: 'NA (North American)'
+      }, {
+        id: 'HEnDA',
+        name: 'HEnDA (Academic)'
+      }]
     };
-  }
-};
-})()
-if (module.exports.__esModule) module.exports = module.exports.default
-var __vue__options__ = (typeof module.exports === "function"? module.exports.options: module.exports)
-if (__vue__options__.functional) {console.error("[vueify] functional components are not supported and should be defined in plain js files using render functions.")}
-__vue__options__.render = function(){with(this){return _h('div',{attrs:{"id":"nauth-pageA"}},[_h('p',[_s(message)])])}}
-__vue__options__.staticRenderFns = []
-if (module.hot) {(function () {  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), true)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-7", __vue__options__)
-  } else {
-    hotAPI.reload("data-v-7", __vue__options__)
-  }
-})()}
-},{"vue":4,"vue-hot-reload-api":2}],14:[function(require,module,exports){
-;(function(){
-"use strict";
+  },
+  created: function created() {
+    this.refresh_data();
+    this.id_counter = this.tournaments.length;
+  },
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = {
-  name: 'nauth-pageB',
-  data: function data() {
-    return {
-      message: "Page B"
-    };
+  watch: {
+    '$route': 'refresh_data'
+  },
+  methods: {
+    refresh_data: function refresh_data() {
+      var _this = this;
+
+      this.loading = true;
+      this.field.tournament_name = 'Loading...';
+      this.field.tournament_style = null;
+      setTimeout(function () {
+        _this.loading = false;
+        _this.field = {
+          tournament_name: 'PDA Tournament',
+          tournament_style: 'PDA'
+        };
+      }, 500);
+    },
+    add_data: function add_data(evt) {
+      var new_round_name = prompt('What\'s the name of new round?');
+      if (new_round_name) {
+        this.round.push({
+          id: this.id_counter++,
+          name: new_round_name,
+          url: '/' + ['admin', 't', this.$route.tournament_name, new_round_name].join('/'),
+          config_url: '/' + ['admin', 't', this.$route.tournament_name, new_round_name, 'config'].join('/')
+        });
+      }
+    },
+    delete_data: function delete_data(round) {
+      if (confirm('Are you sure to DELETE ' + round.name + '?')) {
+        this.rounds = this.rounds.filter(function (el) {
+          return el.id !== round.id;
+        }, this);
+      }
+    }
   }
 };
 })()
 if (module.exports.__esModule) module.exports = module.exports.default
 var __vue__options__ = (typeof module.exports === "function"? module.exports.options: module.exports)
 if (__vue__options__.functional) {console.error("[vueify] functional components are not supported and should be defined in plain js files using render functions.")}
-__vue__options__.render = function(){with(this){return _h('div',{attrs:{"id":"nauth-pageB"}},[_h('p',[_s(message)])])}}
-__vue__options__.staticRenderFns = []
+__vue__options__.render = function(){with(this){return _h('div',{attrs:{"id":"t-tournaments-config"}},[_h('h1',[_s($route.tournament_name)]),_h('form',{staticClass:"pure-form pure-form-aligned"},[_h('fieldset',[_m(0),_h('input',{directives:[{name:"model",rawName:"v-model",value:(field.tournament_name),expression:"field.tournament_name"}],attrs:{"id":"field_tournament_name","type":"text","placeholder":"Tournament Name","required":"required"},domProps:{"value":_s(field.tournament_name)},on:{"input":function($event){if($event.target.composing)return;field.tournament_name=$event.target.value}}}),_m(1),_h('select',{directives:[{name:"model",rawName:"v-model",value:(field.tournament_style),expression:"field.tournament_style"}],attrs:{"id":"field_touenament_style"},on:{"change":function($event){field.tournament_style=Array.prototype.filter.call($event.target.options,function(o){return o.selected}).map(function(o){var val = "_value" in o ? o._value : o.value;return val})[0]}}},[(this.loading)?_h('option',["Loading"]):_e(),_l((styles),function(style){return _h('option',{domProps:{"value":style.id}},[_s(style.name)])})])])]),_m(2),_h('table',{staticClass:"pure-table pure-table-horizontal"},[_h('thead',[_h('tr',[_m(3),_m(4),_h('th',{staticClass:"ctrl-btn",on:{"click":refresh_data}},[_m(5)]),_h('th',{staticClass:"ctrl-btn",on:{"click":add_data}},[_m(6)])])]),_h('tbody',[_h('tr',{directives:[{name:"show",rawName:"v-show",value:(loading),expression:"loading"}]},[_m(7),_m(8)]),_h('tr',{directives:[{name:"show",rawName:"v-show",value:(error),expression:"error"}]},[_m(9),_h('td',{attrs:{"colspan":"3"}},[_s(error)])]),_l((rounds),function(datum){return (!(loading))?_h('tr',[_h('router-link',{attrs:{"tag":"td","to":"datum.url"}},[_h('a',[_s(datum.id)])]),_h('router-link',{attrs:{"tag":"td","to":datum.url}},[_h('a',[_s(datum.name)])]),_h('router-link',{staticClass:"ctrl-btn",attrs:{"tag":"td","to":datum.config_url}},[_m(10,true)]),_h('td',{staticClass:"ctrl-btn",on:{"click":function($event){delete_data(datum)}}},[_m(11,true)])]):_e()})])])])}}
+__vue__options__.staticRenderFns = [function(){with(this){return _h('label',{attrs:{"for":"field_tournament_name"}},["Tournament Name"])}},function(){with(this){return _h('label',{attrs:{"for":"field_tournament_style"}},["Tournament Style"])}},function(){with(this){return _h('h2',["Rounds"])}},function(){with(this){return _h('th',["ID"])}},function(){with(this){return _h('th',["Round Name"])}},function(){with(this){return _h('a',[_h('i',{staticClass:"fa fa-refresh",attrs:{"aria-hidden":"true","title":"Refresh"}})])}},function(){with(this){return _h('a',[_h('i',{staticClass:"fa fa-plus",attrs:{"aria-hidden":"true","title":"Add New Round..."}})])}},function(){with(this){return _h('td',[_h('i',{staticClass:"fa fa-spinner fa-spin"})])}},function(){with(this){return _h('td',{attrs:{"colspan":"3"}},["Loading, please wait..."])}},function(){with(this){return _h('td',[_h('i',{staticClass:"fa fa-exclamation-triangle"})])}},function(){with(this){return _h('a',[_h('i',{staticClass:"fa fa-pencil",attrs:{"aria-hidden":"true","title":"Edit"}})])}},function(){with(this){return _h('i',{staticClass:"fa fa-times",attrs:{"aria-hidden":"true","titile":"Delete"}})}}]
 if (module.hot) {(function () {  var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   module.hot.accept()
+  module.hot.dispose(__vueify_style_dispose__)
   if (!module.hot.data) {
-    hotAPI.createRecord("data-v-8", __vue__options__)
+    hotAPI.createRecord("data-v-4", __vue__options__)
   } else {
-    hotAPI.reload("data-v-8", __vue__options__)
+    hotAPI.reload("data-v-4", __vue__options__)
   }
 })()}
-},{"vue":4,"vue-hot-reload-api":2}],15:[function(require,module,exports){
+},{"vue":4,"vue-hot-reload-api":2,"vueify/lib/insert-css":6}],12:[function(require,module,exports){
+// global components
+
+const components = [
+/*  {
+    name: 'db-table',
+    component: require('./components/db_table.vue'),
+  }*/
+];
+
+module.exports = components;
+
+},{}],13:[function(require,module,exports){
 
 const routes = [
   {
-    path: '/auth',
-    component: require('./components/auth.vue'),
+    path: '/t',
+    component: require('./components/pages/t.vue'),
     children: [
       {
-        path: 'home',
-        component: require('./components/auth/home.vue')
+        path: ':tournament_name',
+        component: require('./components/pages/t/home.vue')
       },
       {
-        path: 'logout',
-        component: require('./components/logout.vue')
+        path: ':tournament_name/config',
+        component: require('./components/pages/t/tournaments_config.vue'),
+        meta: {
+          requiresAuth: true
+        }
+      }/*,
+      {
+        path: ':tournament_name/:round_name',
+        component: require('./components/pages/t/rounds.vue')
+      },
+      {
+        path: ':tournament_name/:round_name/draw',
+        component: require('./components/pages/t/draw.vue')
+      },
+      {
+        path: ':tournament_name/:round_name/ballots',
+        component: require('./components/pages/t/ballots.vue')
+      },
+      {
+        path: ':tournament_name/:round_name/evaluations',
+        component: require('./components/pages/t/evaluations.vue')
+      },
+      {
+        path: ':tournament_name/:round_name/standings',
+        component: require('./components/pages/t/standings.vue')
       }
-    ]
+*/    ]
+  },
+/*  {
+    path: '/logout',
+    component: require('./components/pages/logout.vue')
   },
   {
-    path: '/nauth',
-    component: require('./components/nauth.vue'),
-    children: [
-      {
-        path: 'home',
-        component: require('./components/nauth/home.vue')
-      },
-      {
-        path: 'pageA',
-        component: require('./components/nauth/pageA.vue')
-      },
-      {
-        path: 'pageB',
-        component: require('./components/nauth/pageB.vue')
-      },
-      {
-        path: 'login',
-        component: require('./components/login.vue')
-      }
-    ]
+    path: '/login',
+    component: require('./components/pages/login.vue')
+  },
+*/  {
+    path: '/home',
+    redirect: '/t/home'
   },
   {
     path: '/',
-    redirect: '/nauth/home'
+    redirect: '/home'
+  },
+  {
+    path: '*',
+    component: require('./components/pages/err404.vue')
   }
 ];
 
 module.exports = routes;
 
-},{"./components/auth.vue":7,"./components/auth/home.vue":8,"./components/login.vue":9,"./components/logout.vue":10,"./components/nauth.vue":11,"./components/nauth/home.vue":12,"./components/nauth/pageA.vue":13,"./components/nauth/pageB.vue":14}]},{},[6]);
+},{"./components/pages/err404.vue":8,"./components/pages/t.vue":9,"./components/pages/t/home.vue":10,"./components/pages/t/tournaments_config.vue":11}]},{},[7]);
