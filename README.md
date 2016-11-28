@@ -1,6 +1,7 @@
 # utab-view
 
-utab front end
+utab front end.
+Visit [demo](http://taulukointipalvelut.github.io/utab-view/).
 
 ## Install and run
 
