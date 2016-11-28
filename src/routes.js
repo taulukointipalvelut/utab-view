@@ -5,8 +5,12 @@ const routes = [
     component: require('./components/pages/t.vue'),
     children: [
       {
-        path: ':tournament_name',
+        path: 'home',
         component: require('./components/pages/t/home.vue')
+      },
+      {
+        path: ':tournament_name',
+        component: require('./components/pages/t/tournament_home.vue')
       },
       {
         path: ':tournament_name/config',

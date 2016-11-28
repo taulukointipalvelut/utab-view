@@ -1,3 +1,6 @@
+<style>
+</style>
+
 <template lang="pug">
   #err404
     h1 404 Error: Page Not Found
