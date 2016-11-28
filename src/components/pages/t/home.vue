@@ -31,12 +31,26 @@
       color black
   td a
     color dimgray
-    &:first
+    &:first,
     &:nth-child(2)
       display block
   .ctrl-btn
     cursor pointer
     text-align right
+  input[type=text].input-like-text
+    border 0 none rgba(0, 0, 0, 0)
+    outline transparent none 0
+    box-shadow none
+    background-color transparent
+    width 100%
+    margin 0
+    padding 0
+  tbody > tr:last-of-type
+    cursor default
+    font-weight bold
+    color #696969
+    &:hover
+      background-color transparent
 </style>
 
 <template lang="pug">
@@ -47,12 +61,10 @@
         tr
           th ID
           th Tournament Name
+          th
           th.ctrl-btn(v-on:click="refresh_data")
             a
               i.fa.fa-refresh(aria-hidden="true" title="Refresh")
-          th.ctrl-btn(v-on:click="add_data")
-            a
-              i.fa.fa-plus(aria-hidden="true" title="Add New Tournament")
       tbody
         tr(v-show="loading")
           td
@@ -72,6 +84,11 @@
               i.fa.fa-pencil(aria-hidden="true" title="Edit")
           td.ctrl-btn(v-on:click="delete_data(datum)")
             i.fa.fa-times(aria-hidden="true" titile="Delete")
+        tr(v-if="!(loading)")
+          td {{ id_counter }}
+          td(colspan="2"): input#new_tournament_name.input-like-text(type="text" v-model="new_tournament_name" placeholder="New Tournament Name...")
+          td.ctrl-btn(v-on:click="add_data")
+            a: i.fa.fa-plus(aria-hidden="true" title="Add New Tournament...")
 </template>
 
 <script>
@@ -82,25 +99,25 @@ export default {
       loading: true,
       error: null,
       id_counter: 1,// just for testing
+      new_tournament_name: '',
       tournaments: [
         {
           id: 0,
           name: 'Test Tournament',
-          url: '/admin/t/Test Tournament',
-          config_url: '/admin/t/Test Tournament/config'
+          url: '/t/Test Tournament',
+          config_url: '/t/Test Tournament/config'
         },
         {
           id: 1,
           name: 'Test Tournament 2',
-          url: '/admin/t/Test Tournament 2',
-          config_url: '/admin/t/Test Tournament 2/config'
+          url: '/t/Test Tournament 2',
+          config_url: '/t/Test Tournament 2/config'
         }
       ]
     }
   },
   created () {
-    this.refresh_data()
-    this.id_counter = this.tournaments.length;  // just for testing
+    this.refresh_data();
   },
   watch: {
     '$route': 'refresh_data'
@@ -110,22 +127,25 @@ export default {
       this.loading = true;
       setTimeout(()=>{
         this.loading = false;
+        this.id_counter = this.tournaments.length;  // just for testing
       }, 500);
     },
     add_data (evt) {
-      let new_tournament_name = prompt('What\'s the name of new tournament?');
-      if (new_tournament_name) {
+      if (this.new_tournament_name) {
         this.tournaments.push({
           id: this.id_counter++,
-          name: new_tournament_name,
-          url: '/' + ['admin', 't', new_tournament_name].join('/'),
-          config_url: '/' + ['admin', 't', new_tournament_name, 'config'].join('/')
+          name: this.new_tournament_name,
+          url: '/' + ['t', this.new_tournament_name].join('/'),
+          config_url: '/' + ['t', this.new_tournament_name, 'config'].join('/')
         });
+        this.new_tournament_name = '';
+        this.refresh_data();
       }
     },
     delete_data (tournament) {
       if (confirm('Are you sure to DELETE ' + tournament.name + '?')) {
         this.tournaments = this.tournaments.filter((el) => el.id !== tournament.id, this);
+        this.refresh_data();
       }
     }
   }

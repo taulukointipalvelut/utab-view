@@ -10,7 +10,7 @@ const routes = [
       },
       {
         path: ':tournament_name',
-        component: require('./components/pages/t/tournament_home.vue')
+        component: require('./components/pages/t/tournaments_home.vue')
       },
       {
         path: ':tournament_name/config',

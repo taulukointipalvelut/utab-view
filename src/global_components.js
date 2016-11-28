@@ -2,8 +2,8 @@
 
 const components = [
 /*  {
-    name: 'db-table',
-    component: require('./components/db_table.vue'),
+    name: 'input-like-text',
+    component: require('./components/input_like_text.vue'),
   }*/
 ];
 

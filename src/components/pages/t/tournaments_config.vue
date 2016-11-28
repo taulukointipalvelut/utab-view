@@ -31,57 +31,69 @@
       color black
   td a
     color dimgray
-    &:first
+    &:first,
     &:nth-child(2)
       display block
   .ctrl-btn
     cursor pointer
     text-align right
+  input[type=text].input-like-text
+    border 0 none rgba(0, 0, 0, 0)
+    outline transparent none 0
+    box-shadow none
+    background-color transparent
+    width 100%
+    margin 0
+    padding 0
+  tbody > tr:last-of-type
+    cursor default
+    font-weight bold
+    color #696969
+    &:hover
+      background-color transparent
 </style>
 
 <template lang="pug">
   #t-tournaments-config
-    h1 {{ $route.tournament_name }}
     form.pure-form.pure-form-aligned
+      h1
+        input#field_tournament_name.input-like-text(type="text" v-model="tournament.name" placeholder="Tournament Name..." required)
       fieldset
-        label(for="field_tournament_name") Tournament Name
-        input#field_tournament_name(type="text" v-model="field.tournament_name" placeholder="Tournament Name" required)
-
-        label(for="field_tournament_style") Tournament Style
-        select#field_touenament_style(v-model="field.tournament_style")
-          option(v-if="this.loading") Loading
-          option(v-for="style in styles" v-bind:value="style.id") {{ style.name }}
+        .pure-control-group
+          label(for="field_tournament_style") Tournament Style
+          select#field_touenament_style(v-model="tournament.style")
+            option(v-if="this.loading") Loading
+            option(v-for="style in styles" v-bind:value="style.id") {{ style.name }}
     h2 Rounds
     table.pure-table.pure-table-horizontal
       thead
         tr
           th ID
           th Round Name
+          th
           th.ctrl-btn(v-on:click="refresh_data")
-            a
-              i.fa.fa-refresh(aria-hidden="true" title="Refresh")
-          th.ctrl-btn(v-on:click="add_data")
-            a
-              i.fa.fa-plus(aria-hidden="true" title="Add New Round...")
+            a: i.fa.fa-refresh(aria-hidden="true" title="Refresh")
       tbody
         tr(v-show="loading")
-          td
-           i.fa.fa-spinner.fa-spin
-          td(colspan="3") Loading, please wait...
+          td: i.fa.fa-spinner.fa-spin
+          td(colspan="4") Loading, please wait...
         tr(v-show="error")
-          td
-           i.fa.fa-exclamation-triangle
-          td(colspan="3") {{ error }}
+          td: i.fa.fa-exclamation-triangle
+          td(colspan="4") {{ error }}
         tr(v-if="!(loading)", v-for="datum in rounds")
-          router-link(tag="td", to="datum.url")
+          router-link(tag="td", :to="datum.url")
             a {{ datum.id }}
           router-link(tag="td", :to="datum.url")
             a {{ datum.name }}
           router-link.ctrl-btn(tag="td", :to="datum.config_url")
-            a
-              i.fa.fa-pencil(aria-hidden="true" title="Edit")
+            a: i.fa.fa-pencil(aria-hidden="true" title="Edit")
           td.ctrl-btn(v-on:click="delete_data(datum)")
             i.fa.fa-times(aria-hidden="true" titile="Delete")
+        tr(v-if="!(loading)")
+          td {{ id_counter }}
+          td(colspan="2"): input#new_round_name.input-like-text(type="text" v-model="new_round_name" placeholder="New Round Name...")
+          td.ctrl-btn(v-on:click="add_data")
+            a: i.fa.fa-plus(aria-hidden="true" title="Add New Round...")
 </template>
 
 <script>
@@ -92,18 +104,19 @@ export default {
       loading: true,
       error: null,
       id_counter: 1,// just for testing
-      field: {
-        tournament_name: '',
-        tournament_style: ''
+      new_round_name: '',
+      tournament:{
+        name: this.$route.params.tournament_name,
+        style: 'PDA',
+        url: '/' + ['t', this.$route.params.tournament_name].join('/'),
+        config_url: '/' + ['t', this.$route.params.tournament_name, 'config'].join('/')
       },
       rounds: [
         {
           id: 0,
-          name: 'Round 1'
-        },
-        {
-          id: 1,
-          name: 'Round 2'
+          name: 'Round 1',
+          url: '/' + ['t', this.$route.params.tournament_name, 'Round 1'].join('/'),
+          config_url: '/' + ['t', this.$route.params.tournament_name, 'Round 1', 'config'].join('/')
         }
       ],
       styles: [
@@ -132,8 +145,7 @@ export default {
   },
 
   created () {
-    this.refresh_data()
-    this.id_counter = this.tournaments.length;  // just for testing
+    this.refresh_data();
   },
   watch: {
     '$route': 'refresh_data'
@@ -141,30 +153,27 @@ export default {
   methods: {
     refresh_data () {
       this.loading = true;
-      this.field.tournament_name = 'Loading...';
-      this.field.tournament_style = null;
       setTimeout(()=>{
         this.loading = false;
-        this.field = {
-          tournament_name: 'PDA Tournament',
-          tournament_style: 'PDA'
-        }
+        this.id_counter = this.rounds.length; // just for testing
       }, 500);
     },
     add_data (evt) {
-      let new_round_name = prompt('What\'s the name of new round?');
-      if (new_round_name) {
-        this.round.push({
+      if (this.new_round_name) {
+        this.rounds.push({
           id: this.id_counter++,
-          name: new_round_name,
-          url: '/' + ['admin', 't', this.$route.tournament_name, new_round_name].join('/'),
-          config_url: '/' + ['admin', 't', this.$route.tournament_name, new_round_name, 'config'].join('/')
+          name: this.new_round_name,
+          url: '/' + ['t', this.$route.params.tournament_name, this.new_round_name].join('/'),
+          config_url: '/' + ['t', this.$route.params.tournament_name, this.new_round_name, 'config'].join('/')
         });
+        this.new_round_name = '';
+        this.refresh_data();
       }
     },
     delete_data (round) {
       if (confirm('Are you sure to DELETE ' + round.name + '?')) {
         this.rounds = this.rounds.filter((el) => el.id !== round.id, this);
+        this.refresh_data();
       }
     }
   }
