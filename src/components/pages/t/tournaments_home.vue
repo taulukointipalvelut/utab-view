@@ -89,28 +89,7 @@ export default {
           config_url: '/' + ['t', this.$route.params.tournament_name, 'Round 1', 'config'].join('/')
         }
       ],
-      styles: [
-        {
-          id: 'PDA',
-          name: 'PDA'
-        },
-        {
-          id: 'Asian',
-          name: 'Asian'
-        },
-        {
-          id: 'BP',
-          name: 'BP (British Parliamentary)'
-        },
-        {
-          id: 'NA',
-          name: 'NA (North American)'
-        },
-        {
-          id: 'HEnDA',
-          name: 'HEnDA (Academic)'
-        }
-      ]
+      styles: ['PDA', 'ASIAN', 'BP', 'NA', 'ACADEMIC', 'NAFA', 'PF']
     }
   },
 
