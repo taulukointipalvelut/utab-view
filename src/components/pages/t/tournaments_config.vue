@@ -121,24 +121,39 @@ export default {
       ],
       styles: [
         {
-          id: 'PDA',
-          name: 'PDA'
+          name: "ACADEMIC",
+          team_num: 2,
+          score_weights: [1, 1, 1, 1]
         },
         {
-          id: 'Asian',
-          name: 'Asian'
+          name: "NA",
+          team_num: 2,
+          score_weights: [1, 1, 0.5]
         },
         {
-          id: 'BP',
-          name: 'BP (British Parliamentary)'
+          name: "NAFA",
+          team_num: 2,
+          score_weights: [1, 1, 1, 1]
         },
         {
-          id: 'NA',
-          name: 'NA (North American)'
+          name: "PDA",
+          team_num: 2,
+          score_weights: [1, 1, 1]
         },
         {
-          id: 'HEnDA',
-          name: 'HEnDA (Academic)'
+          name: "ASIAN",
+          team_num: 2,
+          score_weights: [1, 1, 1, 0.5]
+        },
+        {
+          name: "BP",
+          team_num: 4,
+          score_weights: [1, 1]
+        },
+        {
+          name: "PF",
+          team_num: 2,
+          score_weights: [1, 1, 1, 1]
         }
       ]
     }

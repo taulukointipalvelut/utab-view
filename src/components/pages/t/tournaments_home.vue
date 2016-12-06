@@ -89,7 +89,43 @@ export default {
           config_url: '/' + ['t', this.$route.params.tournament_name, 'Round 1', 'config'].join('/')
         }
       ],
-      styles: ['PDA', 'ASIAN', 'BP', 'NA', 'ACADEMIC', 'NAFA', 'PF']
+      styles: [
+        {
+          name: "ACADEMIC",
+          team_num: 2,
+          score_weights: [1, 1, 1, 1]
+        },
+        {
+          name: "NA",
+          team_num: 2,
+          score_weights: [1, 1, 0.5]
+        },
+        {
+          name: "NAFA",
+          team_num: 2,
+          score_weights: [1, 1, 1, 1]
+        },
+        {
+          name: "PDA",
+          team_num: 2,
+          score_weights: [1, 1, 1]
+        },
+        {
+          name: "ASIAN",
+          team_num: 2,
+          score_weights: [1, 1, 1, 0.5]
+        },
+        {
+          name: "BP",
+          team_num: 4,
+          score_weights: [1, 1]
+        },
+        {
+          name: "PF",
+          team_num: 2,
+          score_weights: [1, 1, 1, 1]
+        }
+      ]
     }
   },
 
