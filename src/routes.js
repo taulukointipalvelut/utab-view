@@ -10,23 +10,30 @@ const routes = [
       },
       {
         path: ':tournament_name',
-        component: require('./components/pages/t/tournaments_home.vue')
+        component: require('./components/pages/t/tournaments/home.vue')
       },
       {
         path: ':tournament_name/config',
-        component: require('./components/pages/t/tournaments_config.vue'),
+        component: require('./components/pages/t/tournaments/config.vue'),
         meta: {
           requiresAuth: true
         }
-      }/*,
+      },
       {
         path: ':tournament_name/:round_name',
-        component: require('./components/pages/t/rounds.vue')
+        component: require('./components/pages/t/rounds/home.vue')
       },
       {
-        path: ':tournament_name/:round_name/draw',
-        component: require('./components/pages/t/draw.vue')
+        path: ':tournament_name/:round_name/config',
+        component: require('./components/pages/t/rounds/config.vue'),
+        meta: {
+          requiresAuth: true
+        }
       },
+      {
+        path: ':tournament_name/:round_name/:draw_name',
+        component: require('./components/pages/t/draws/home.vue')
+      }/*,
       {
         path: ':tournament_name/:round_name/ballots',
         component: require('./components/pages/t/ballots.vue')

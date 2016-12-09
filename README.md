@@ -19,7 +19,7 @@ They are static files.
 ```
 git clone https://github.com/taulukointipalvelut/utab-view.git
 npm install
-npm run build
+npm run gulp build
 ```
 
 Then, open `build/index.html` in your favorite browser or distribute them using servers.
