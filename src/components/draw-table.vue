@@ -13,6 +13,7 @@
     overflow hidden
     white-space nowrap
     text-overflow ellipsis
+    text-align left
   th a,
   td a
     text-decoration none
