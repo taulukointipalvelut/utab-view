@@ -8,6 +8,10 @@ const components = [
   {
     name: 'draw-table',
     component: require('./components/draw-table.vue')
+  },
+  {
+    name: 'ballot-table',
+    component: require('./components/ballot-table.vue')
   }
 ];
 

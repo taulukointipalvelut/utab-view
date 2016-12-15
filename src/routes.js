@@ -31,12 +31,16 @@ const routes = [
         }
       },
       {
-        path: ':tournament_name/:round_name/:draw_name',
+        path: ':tournament_name/:round_name/draws/:draw_name',
         component: require('./components/pages/t/draws/home.vue')
-      }/*,
+      },
       {
         path: ':tournament_name/:round_name/ballots',
-        component: require('./components/pages/t/ballots.vue')
+        component: require('./components/pages/t/ballots/home.vue')
+      }/*,
+      {
+        path: ':tournament_name/:round_name/ballots/:adjudicator_name',
+        component: require('./components/pages/t/ballots/home.vue')
       },
       {
         path: ':tournament_name/:round_name/evaluations',

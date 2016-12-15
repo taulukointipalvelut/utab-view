@@ -20,8 +20,8 @@ export default {
       draw:{
         id: 0,
         name: this.$route.params.draw_name,
-        url: '/' + ['t', this.$route.params.tournament_name, this.$route.params.round_name, this.$route.params.draw_name].join('/'),
-        config_url: '/' + ['t', this.$route.params.tournament_name, this.$route.params.round_name, this.$route.params.draw_name, 'config'].join('/')
+        url: '/' + ['t', this.$route.params.tournament_name, this.$route.params.round_name, 'draws', this.$route.params.draw_name].join('/'),
+        config_url: '/' + ['t', this.$route.params.tournament_name, this.$route.params.round_name, 'draws', this.$route.params.draw_name, 'config'].join('/')
       },
       squares: [
         {

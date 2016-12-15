@@ -7,7 +7,10 @@
 <template lang="pug">
   #t-rounds-home
     h1 {{ round.name }}
-    router-link(v-if="latest_draw", :to="latest_draw.url") Latest Draw
+    p
+      router-link(v-if="latest_draw", :to="latest_draw.url") Show Latest Draw
+      br
+      router-link(v-if="show_latest_ballot", :to="latest_ballot") Enter Latest Ballot
 </template>
 
 <script>
@@ -27,10 +30,11 @@ export default {
         {
           id: 0,
           name: 'Draw 0',
-          url: '/' + ['t', this.$route.params.tournament_name, this.$route.params.round_name, 'Draw 0'].join('/')
+          url: '/' + ['t', this.$route.params.tournament_name, this.$route.params.round_name, 'draws', 'Draw 0'].join('/')
         }
       ],
-      dd: ['hi']
+      show_latest_ballot: true,
+      latest_ballot: '/' + ['t', this.$route.params.tournament_name, this.$route.params.round_name, 'ballots'].join('/')
     }
   },
 
