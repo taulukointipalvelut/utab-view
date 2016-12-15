@@ -1,4 +1,4 @@
-<style lang="stylus">
+<style lang="stylus" scoped>
   #t-home
     padding-left 15px
     padding-right 15px

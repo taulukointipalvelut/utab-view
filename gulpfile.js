@@ -9,12 +9,20 @@ var uglify       = require('gulp-uglify');
 var streamify    = require('gulp-streamify');
 var rename       = require('gulp-rename');
 
-gulp.task('build-js', function() {
+var autoprefixer_config = {
+  browsers: ['last 2 version', 'iOS >= 8.1', 'Android >= 4.4'],
+  cascade: false
+};
+
+
+gulp.task('build-vue', function() {
   // js files & vue
   browserify({
     'entries': ['./src/app.js']
   })
-  .transform(vueify)
+  .transform(vueify/*, {
+    postcss: [autoprefixer(autoprefixer_config), cssnano()]
+  }*/)
   .bundle()
   .pipe(source('bundle.js'))
 /*  .pipe(streamify(uglify({
@@ -36,10 +44,7 @@ gulp.task('build-css', function() {
   // css
   gulp.src(['./src/main.styl'])
       .pipe(stylus())
-      .pipe(autoprefixer({
-            browsers: ['last 2 version', 'iOS >= 8.1', 'Android >= 4.4'],
-            cascade: false
-        }))
+      .pipe(autoprefixer(autoprefixer_config))
       .pipe(cssnano())
       .pipe(rename({
         extname: '.min.css'
@@ -47,5 +52,5 @@ gulp.task('build-css', function() {
       .pipe(gulp.dest('./build/css/'))
 });
 
-gulp.task('build', ['build-js', 'build-css', 'build-html'])
+gulp.task('build', ['build-vue', 'build-css', 'build-html'])
 gulp.task('default', ['build'])

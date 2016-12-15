@@ -10,7 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "joi-browser": "^9.1.0",
     "moment": "^2.17.1",
     "vue": "^2.0.5",
     "vue-router": "^2.0.1"
