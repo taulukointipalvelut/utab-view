@@ -37,11 +37,21 @@ const routes = [
       {
         path: ':tournament_name/:round_name/ballots',
         component: require('./components/pages/t/ballots/home.vue')
-      }/*,
+      },
       {
         path: ':tournament_name/:round_name/ballots/:adjudicator_name',
-        component: require('./components/pages/t/ballots/home.vue')
+        component: require('./components/pages/t/ballots/adjudicator.vue'),
       },
+      {
+        path: ':tournament_name/:round_name/ballots/:adjudicator_name/new',
+        component: require('./components/pages/t/ballots/new.vue'),
+        children: [
+          {
+            path: 'check_venue',
+            component: require('./components/pages/t/ballots/new/check_venue.vue'),
+          },
+        ]
+      }/*,
       {
         path: ':tournament_name/:round_name/evaluations',
         component: require('./components/pages/t/evaluations.vue')

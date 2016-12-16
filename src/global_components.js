@@ -12,6 +12,10 @@ const components = [
   {
     name: 'ballot-table',
     component: require('./components/ballot-table.vue')
+  },
+  {
+    name: 'version-table',
+    component: require('./components/version-table.vue')
   }
 ];
 
