@@ -43,7 +43,7 @@ export default {
           },
           {
             short_name: 'Opp',
-            long_name: 'Opposition'
+            long_name: 'Opposition',
             roles: [
               {
                 short_name: 'LO',

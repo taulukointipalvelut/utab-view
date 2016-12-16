@@ -29,3 +29,7 @@ To run tests, type:
 ```
 npm run test
 ```
+
+## Documentation
+
+Not yet available...

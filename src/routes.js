@@ -40,7 +40,7 @@ const routes = [
       },
       {
         path: ':tournament_name/:round_name/ballots/:adjudicator_name',
-        component: require('./components/pages/t/ballots/adjudicator.vue'),
+        component: require('./components/pages/t/ballots/home.vue'),
       },
       {
         path: ':tournament_name/:round_name/ballots/:adjudicator_name/new',

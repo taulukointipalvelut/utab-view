@@ -1,11 +1,11 @@
 <style lang="stylus" scoped>
-  #t-ballots-enter-venue_check
+  #t-ballots-enter-check_venue
     padding-left 15px
     padding-right 15px
 </style>
 
 <template lang="pug">
-  #t-ballots-enter-venue_check
+  #t-ballots-enter-check_venue
     form.pure-form.pure-form-aligned
       h1 {{ tournament.name }}
         input#field_tournament_name.input-like-text(type="text" v-model="tournament.name" placeholder="Tournament Name..." required)
@@ -21,7 +21,7 @@
 
 <script>
 export default {
-  name: 't-ballots-enter-venue_check',
+  name: 't-ballots-enter-check_venue',
   data () {
     return {
       loading: true,

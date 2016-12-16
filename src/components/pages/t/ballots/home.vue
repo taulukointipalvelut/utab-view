@@ -22,25 +22,25 @@ export default {
           id: 0,
           name: 'Adjudicator 1',
           time: null,
-          url: '/' + ['t', this.$route.params.tournament_name, this.$route.params.round_name, 'ballots', 'Adjudicator 1', 'home'].join('/')
+          url: '/' + ['t', this.$route.params.tournament_name, this.$route.params.round_name, 'ballots', 'Adjudicator 1'].join('/')
         },
         {
           id: 1,
           name: 'Adjudicator 2',
           time: 100,
-          url: '/' + ['t', this.$route.params.tournament_name, this.$route.params.round_name, 'ballots', 'Adjudicator 2', 'home'].join('/')
+          url: '/' + ['t', this.$route.params.tournament_name, this.$route.params.round_name, 'ballots', 'Adjudicator 2'].join('/')
         },
         {
           id: 2,
           name: 'Adjudicator 3',
           time: null,
-          url: '/' + ['t', this.$route.params.tournament_name, this.$route.params.round_name, 'ballots', 'Adjudicator 3', 'home'].join('/')
+          url: '/' + ['t', this.$route.params.tournament_name, this.$route.params.round_name, 'ballots', 'Adjudicator 3'].join('/')
         },
         {
           id: 3,
           name: 'Adjudicator 4',
           time: 0,
-          url: '/' + ['t', this.$route.params.tournament_name, this.$route.params.round_name, 'ballots', 'Adjudicator 4', 'home'].join('/')
+          url: '/' + ['t', this.$route.params.tournament_name, this.$route.params.round_name, 'ballots', 'Adjudicator 4'].join('/')
         }
       ]
     }
