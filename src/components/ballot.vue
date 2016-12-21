@@ -1,5 +1,5 @@
 <style lang="stylus" scoped>
-  /*#component-data-table*/
+  /*#component-ballot*/
   .table-wrapper
     width 100%
     overflow auto
@@ -57,60 +57,48 @@
 </style>
 
 <template lang="pug">
-  #component-data-table
+  #component-ballot
     .table-wrapper
       table.pure-table.pure-table-horizontal
         thead
           tr
-            //-th ID
-            th {{ title }}
-            //-th
+            th Role
+            th Speaker
+            th Matter
+            th Manner
+            th POI
+            th Best Speaker
             th.ctrl-btn(v-on:click="refresh_data")
               a: i.fa.fa-refresh(aria-hidden="true" title="Refresh")
         tbody
           tr(v-show="loading")
             td: i.fa.fa-spinner.fa-spin
-            td(colspan="4") Loading, please wait...
+            td(colspan="6") Loading, please wait...
           tr(v-show="error")
             td: i.fa.fa-exclamation-triangle
-            td(colspan="4") {{ error }}
+            td(colspan="6") {{ error }}
           tr(v-if="!(loading)", v-for="datum in data")
-            //-router-link(tag="td", :to="datum.url")
-              a {{ datum.id }}
-            router-link(tag="td", :to="datum.url")
-              a {{ datum.name }}
+            td {{ datum.role }}
+            td {{ datum.speaker }}
+            td {{ datum.scores.matter }}
+            td {{ datum.scores.manner }}
+            td {{ datum.scores.poi_score }}
+            td: i.fa.fa-check(v-if="datum.is_best_speaker" aria-hidden="true")
             td
-              router-link.ctrl-btn(v-if="datum.config_url", :to="datum.config_url")
-                //-i.fa.fa-pencil(aria-hidden="true" title="Edit")
-            //-td.ctrl-btn(v-on:click="delete_data(datum)")
-              i.fa.fa-times(aria-hidden="true" title="Delete")
-          //-tr(v-if="!(loading)")
-            td
-            td(colspan="2"): input#new_datum_name.input-like-text(type="text" v-model="new_datum_name" placeholder="New Name...")
-            td.ctrl-btn(v-on:click="add_data")
-              a: i.fa.fa-plus(aria-hidden="true" title="Add")
+              router-link.ctrl-btn(v-if="datum.url", :to="datum.url")
+                i.fa.fa-pencil(aria-hidden="true" title="Edit")
+          tr(v-if="!(loading)")
+            td(colspan="2") Total (Matter + Manner)
+            td(colspan="5") {{ total_score }}
 </template>
 
 <script>
 export default {
-  name: 'component-data-table',
+  name: 'component-ballot',
   props: {
-    title: {
-      type: String,
-      required: true
-    },
     data: {
       type: Array,
-      validator: (item) => {
-        return item.every((v) => {
-          return ((v === undefined || v === null) ||
-                    ((v.id !== undefined && v.id !== null) &&
-                                         (v.name !== undefined && v.name !== null) &&
-                                         (v.url !== undefined && v.url !== null)
-                                        ));
-        });
-      },
-      default: []
+      required: true
     },
     error: {
       type: String,
@@ -122,9 +110,9 @@ export default {
       required: true
     }
   },
-  data () {
-    return {
-      new_datum_name: ''
+  computed: {
+    total_score () {
+      return this.data.reduce((acc, v) => acc + v.scores.matter + v.scores.manner, 0)
     }
   },
 
@@ -137,17 +125,6 @@ export default {
   methods: {
     refresh_data () {
       this.$emit('refresh');
-    },
-    add_data (evt) {
-      if (this.new_datum_name) {
-        this.$emit('add', this.new_datum_name);
-        this.new_datum_name = '';
-      }
-    },
-    delete_data (datum) {
-      if (confirm('Are you sure to DELETE ' + datum.name + '?')) {
-        this.$emit('delete', datum);
-      }
     }
   }
 }

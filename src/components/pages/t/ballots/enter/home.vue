@@ -19,7 +19,7 @@ export default {
       data:[
         {
           version: '20161216004223',
-          time: Date.now().toISOString(),
+          time: Date.now(),
           url: '/' + ['t', this.$route.params.tournament_name, this.$route.params.round_name, 'ballots', 'Adjudicator 1', '20161216004223'].join('/')
         },
         {
@@ -33,6 +33,11 @@ export default {
 
   created () {
     this.refresh_data()
+
+    if(true){//this.data === [] || this.data === null || this.data === undefined){
+      console.log('redirect to:', this.$route.path.replace('/home', '') + '/201612160000000/check_venue');
+      this.$router.replace(this.$route.path.replace('/home', '') + '/201612160000000/check_venue');
+    }
   },
   watch: {
     '$route': 'refresh_data'

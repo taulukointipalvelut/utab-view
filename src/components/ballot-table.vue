@@ -1,7 +1,9 @@
 <style lang="stylus" scoped>
-  #component-ballot-table
-    margin-left 15px
-    margin-right 15px
+  /*#component-ballot-table*/
+  .table-wrapper
+    width 100%
+    overflow auto
+    white-space nowrap
   table
     width 100%
   tbody tr
@@ -43,32 +45,35 @@
   .ctrl-btn
     cursor pointer
     text-align right
+  .fa-flag-checkered
+    font-style italic
 </style>
 
 <template lang="pug">
   #component-ballot-table
-    table.pure-table.pure-table-horizontal
-      thead
-        tr
-          th
-          th Adjudicator
-          th TimeDiff
-          th.ctrl-btn(v-on:click="refresh_data")
-            a: i.fa.fa-refresh(aria-hidden="true" title="Refresh")
-      tbody
-        tr(v-show="loading")
-          td: i.fa.fa-spinner.fa-spin
-          td(colspan="3") Loading, please wait...
-        tr(v-show="error")
-          td: i.fa.fa-exclamation-triangle
-          td(colspan="3") {{ error }}
-        router-link(tag="tr", v-if="!(loading)", v-for="datum in sorted_data", :to="datum.url" v-bind:class="{ done: (datum.time !== undefined && datum.time !== null) }")
-          td: i.fa.fa-check(v-if="datum.time !== undefined && datum.time !== null" aria-hidden="true")
-          td {{ datum.name }}
-          td
-            span(v-if="datum.time") {{ datum.time }}
-            i.fa.fa-flag-checkered(v-if="datum.time === 0" aria-hidden="true")
-          td: i.fa.fa-chevron-right(aria-hidden="true")
+    .table-wrapper
+      table.pure-table.pure-table-horizontal
+        thead
+          tr
+            th
+            th Adjudicator
+            th TimeDiff
+            th.ctrl-btn(v-on:click="refresh_data")
+              a: i.fa.fa-refresh(aria-hidden="true" title="Refresh")
+        tbody
+          tr(v-show="loading")
+            td: i.fa.fa-spinner.fa-spin
+            td(colspan="3") Loading, please wait...
+          tr(v-show="error")
+            td: i.fa.fa-exclamation-triangle
+            td(colspan="3") {{ error }}
+          router-link(tag="tr", v-if="!(loading)", v-for="datum in sorted_data", :to="datum.url" v-bind:class="{ done: (datum.time !== undefined && datum.time !== null) }")
+            td: i.fa.fa-check(v-if="datum.time !== undefined && datum.time !== null" aria-hidden="true")
+            td {{ datum.name }}
+            td
+              span(v-if="datum.time") {{ datum.time }}
+              i.fa.fa-flag-checkered(v-if="datum.time === 0" aria-hidden="true")
+            td: i.fa.fa-chevron-right(aria-hidden="true")
 </template>
 
 <script>

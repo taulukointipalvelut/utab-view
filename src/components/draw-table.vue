@@ -1,7 +1,9 @@
 <style lang="stylus" scoped>
-  #component-draw-table
-    margin-left 15px
-    margin-right 15px
+  /*#component-draw-table*/
+  .table-wrapper
+    width 100%
+    overflow auto
+    white-space nowrap
   table
     width 100%
   tbody tr
@@ -54,30 +56,31 @@
 
 <template lang="pug">
   #component-draw-table
-    table.pure-table.pure-table-horizontal(v-if="squares")
-      thead
-        tr
-          th(v-if="are_venues_allocated") Venue
-          th(v-for="position in tournament.style.positions_short") {{ position }}
-          th(v-if="are_adjudicators_allocated") Chair
-          th(v-if="are_panels_allocated") Panels
-          th(v-if="are_trainees_allocated") Trainees
-          th.ctrl-btn(v-on:click="refresh_data")
-            a: i.fa.fa-refresh(aria-hidden="true" title="Refresh")
-      tbody
-        tr(v-show="loading")
-          td: i.fa.fa-spinner.fa-spin
-          td(colspan="4") Loading, please wait...
-        tr(v-show="error")
-          td: i.fa.fa-exclamation-triangle
-          td(colspan="4") {{ error }}
-        tr(v-if="!(loading)", v-for="square in squares")
-          td(v-if="are_venues_allocated") {{ square.venue }}
-          td(v-for="team in square.teams") {{ team }}
-          td(v-if="are_adjudicators_allocated" v-for="chair in square.chairs") {{ chair }}
-          td(v-if="are_panels_allocated" v-for="panel in square.panels") {{ panel }}
-          td(v-if="are_trainees_allocated" v-for="trainee in square.trainees") {{ trainee }}
-          td: span(v-for="warning in square.warnings", :title="warning.text") {{ warning.msg }}
+    .table-wrapper
+      table.pure-table.pure-table-horizontal(v-if="squares")
+        thead
+          tr
+            th(v-if="are_venues_allocated") Venue
+            th(v-for="position in tournament.style.positions_short") {{ position }}
+            th(v-if="are_adjudicators_allocated") Chair
+            th(v-if="are_panels_allocated") Panels
+            th(v-if="are_trainees_allocated") Trainees
+            th.ctrl-btn(v-on:click="refresh_data")
+              a: i.fa.fa-refresh(aria-hidden="true" title="Refresh")
+        tbody
+          tr(v-show="loading")
+            td: i.fa.fa-spinner.fa-spin
+            td(colspan="4") Loading, please wait...
+          tr(v-show="error")
+            td: i.fa.fa-exclamation-triangle
+            td(colspan="4") {{ error }}
+          tr(v-if="!(loading)", v-for="square in squares")
+            td(v-if="are_venues_allocated") {{ square.venue }}
+            td(v-for="team in square.teams") {{ team }}
+            td(v-if="are_adjudicators_allocated" v-for="chair in square.chairs") {{ chair }}
+            td(v-if="are_panels_allocated" v-for="panel in square.panels") {{ panel }}
+            td(v-if="are_trainees_allocated" v-for="trainee in square.trainees") {{ trainee }}
+            td: span(v-for="warning in square.warnings", :title="warning.text") {{ warning.msg }}
 
 </template>
 
@@ -119,13 +122,13 @@ export default {
       return this.are_chairs_allocated || this.are_panels_allocated || this.are_trainees_allocated;
     },
     are_chairs_allocated () {
-      return this.squares.every((square) => square.chairs !== undefined && square.chairs !== null && square.chairs === []);
+      return this.squares.every((square) => square.chairs !== undefined && square.chairs !== null && square.chairs.length !== 0);
     },
     are_panels_allocated () {
-      return this.squares.every((square) => square.panels !== undefined && square.panels !== null && square.panels === []);
+      return this.squares.every((square) => square.panels !== undefined && square.panels !== null && square.panels.length !== 0);
     },
     are_trainees_allocated () {
-      return this.squares.every((square) => square.trainees !== undefined && square.trainees !== null && square.trainees === []);
+      return this.squares.every((square) => square.trainees !== undefined && square.trainees !== null && square.trainees.length !== 0);
     }
   },
 

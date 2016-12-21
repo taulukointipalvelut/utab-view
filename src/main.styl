@@ -1,3 +1,5 @@
+html
+  height 100%
 body
   min-height 100%
 input,
@@ -14,9 +16,15 @@ a
 h1
   border-bottom 1px solid slategray
   padding-bottom 10px
+  & small
+    color gray
+    font-size 60%
+main
+  min-height calc(100vh - 60px)
 footer
-  position fixed
-  bottom 0
+  margin-top 20px
+  height 40px
+  position absolute
   left 15px
   right 15px
   width auto

@@ -11,6 +11,8 @@
       router-link(v-if="latest_draw", :to="latest_draw.url") Show Latest Draw
       br
       router-link(v-if="show_latest_ballot", :to="latest_ballot") Enter Latest Ballot
+      br
+      router-link(v-if="show_latest_evaluation", :to="latest_evaluation") Enter Latest Evaluation
 </template>
 
 <script>
